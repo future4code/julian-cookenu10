@@ -1,5 +1,5 @@
-import {BaseDatabase} from "../service/BaseDatabase"
+import {BaseDatabase} from "../services/BaseDatabase";
 
 export class UserDatabase extends BaseDatabase{
-
+  
 }
