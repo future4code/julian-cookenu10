@@ -19,8 +19,7 @@ export class RecipeDatabase extends BaseDatabase{
     public async getRecipeById(id: string): Promise<any>{
         try {
             const recipe = await this.getConnection().select("*").from(process.env.RECIPES_DB_NAME).where("id", "=", id);
-            
-            return recipe;
+            return recipe[0];
         } catch (error) {
             throw new Error(error.sqlMessage);
         }
