@@ -7,6 +7,7 @@ const authenticator = new Authenticator;
 
 export const createRecipe = async(req: Request, res: Response): Promise<void> =>{
     try {
+        
         const tokenData = authenticator.getData(req.headers.authorization);
         await useRecipeDB.createRecipe(req.body.title, req.body.description, tokenData.id);
         res.status(200).send({message: "Recipe created successfully"});

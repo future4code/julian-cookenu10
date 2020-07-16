@@ -1,11 +1,11 @@
 import {Router} from 'express';
-import {signup}  from './endpoints/signup'; 
+import { signup, login } from './endpoints/user'; 
 import { createRecipe, getRecipe } from './endpoints/recipe';
 
 const routes = Router();
 
 routes.post('/signup', signup);
-routes.post('/login',);
+routes.post('/login', login);
 routes.get('/user/profile',);
 routes.get('/user/:id',);
 routes.post('/recipe', createRecipe);
