@@ -1,6 +1,5 @@
 import {BaseDatabase} from "../services/BaseDatabase"
 import IdGenerator from "../services/utils/IdGenerator"
-import knex from "knex"
 
 export class RecipeDatabase extends BaseDatabase{
     public async createRecipe(title: string, description: string, creator_id: string): Promise<void>{

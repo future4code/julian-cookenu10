@@ -12,7 +12,7 @@ export interface AuthenticationData{
 };
 
 class Authenticator{
-  private static EXPIRES_IN = '1min';
+  private static EXPIRES_IN = '5min';
 
   public generateToken(input: AuthenticationData): string{
     const token = jwt.sign(
