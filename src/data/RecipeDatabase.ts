@@ -1,6 +1,5 @@
 import {BaseDatabase} from "../services/BaseDatabase"
 import IdGenerator from "../services/utils/IdGenerator"
-import knex from "knex"
 
 export class RecipeDatabase extends BaseDatabase{
     public async createRecipe(title: string, description: string, creator_id: string): Promise<void>{
@@ -19,8 +18,7 @@ export class RecipeDatabase extends BaseDatabase{
     public async getRecipeById(id: string): Promise<any>{
         try {
             const recipe = await this.getConnection().select("*").from(process.env.RECIPES_DB_NAME).where("id", "=", id);
-            
-            return recipe;
+            return recipe[0];
         } catch (error) {
             throw new Error(error.sqlMessage);
         }
