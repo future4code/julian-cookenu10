@@ -17,7 +17,7 @@ export const createRecipe = async(req: Request, res: Response): Promise<void> =>
 
 export const getRecipe = async(req: Request, res: Response): Promise<any> => {
     try {
-        const tokenData = authenticator.getData(req.headers.authorization)
+        authenticator.getData(req.headers.authorization)
         const recipe = await useRecipeDB.getRecipeById(req.params.id);
         res.status(200).send(recipe);
     } catch (error) {
