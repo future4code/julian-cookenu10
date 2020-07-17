@@ -1,10 +1,7 @@
 import {UserDatabase} from '../data/UserDatabase';
 import {Response, Request} from 'express';
 import HashManager from '../services/utils/HashManager';
-import IdGenerator from '../services/utils/IdGenerator';
 import Authenticator, {ROLE} from '../services/utils/Authenticator';
-import { unlinkSync } from 'fs';
-import { send } from 'process';
 
 const useUserDataBase = new UserDatabase();
 const hashGen = new HashManager();
@@ -28,7 +25,9 @@ const signup = async (req: Request, res: Response): Promise<any> =>{
       password: body.password,
       role: body.role
     });
+
     res.send(r).status(200);
+    await useUserDataBase.destroyConnection();
   }catch(e){
     res.send(
       {message: e.message}
@@ -48,10 +47,7 @@ const login = async (req: Request, res: Response): Promise<any> =>{
   };
 
   try{
-    const r = await useUserDataBase.getUserByEmail({
-      email: body.email, 
-      password: body.password
-    });
+    const r = await useUserDataBase.getUserByEmail(body.email);
 
     const pwdIsValid = await hashGen.checkHash(r.password, body.password);
 
@@ -59,9 +55,15 @@ const login = async (req: Request, res: Response): Promise<any> =>{
       throw {message:'Invalid password.'};
     };
 
-    const token = tokenGen.generateToken({id: r.id, email: r.email, role: r.role})
+    const token = tokenGen.generateToken({
+      id: r.id, 
+      name: r.name, 
+      email: r.email, 
+      role: r.role
+    });
 
     res.send({token}).status(200);
+    await useUserDataBase.destroyConnection();
   }catch(e){
     res.send(
       {
@@ -70,5 +72,61 @@ const login = async (req: Request, res: Response): Promise<any> =>{
     ).status(400);
   };
 };
+const getProfileInfos = async (req: Request, res: Response): Promise<any> =>{
+  try{
+    const token = req.headers.authorization;
+    const userInfos = tokenGen.getData(token);
+    const r = await useUserDataBase.getUserByEmail(userInfos.email);
+    if(r){
+      res.send(userInfos).status(200);
+      await useUserDataBase.destroyConnection();
+    }else{
+      throw {message: 'User not found.'}
+    };
+  }catch(e){
+    res.send(
+      {
+        message: e.message
+      }
+    ).status(400);
+  };
+};
+const getUserInfos = async (req: Request, res: Response): Promise<any> =>{
+  try{
+    const token = req.headers.authorization;
+    const searchedUserId = req.params.id;
 
-export {signup, login};
+    const tokenIsValid = tokenGen.getData(token);
+    const searchedUserInfos = await useUserDataBase.getUserById(searchedUserId);
+
+    if(searchedUserInfos){
+      res.send(searchedUserInfos).status(200);
+      await useUserDataBase.destroyConnection();
+    }else{
+      throw {message: 'User not found.'};
+    };
+  }catch(e){
+    res.send({
+      message: e.message
+    }).status(400);
+  };
+};
+const deleteUserById = async (req: Request, res: Response): Promise<any> =>{
+  try{
+    const token = req.headers.authorization;
+    const adminInfos = tokenGen.getData(token);
+    const toDeleteUserId = req.params.id;
+    if(adminInfos.role != ROLE.ADMIN){
+      throw {message: 'Not an Admin user. Only Admins are allowed to delete other users.'};
+    };
+
+    const r = await useUserDataBase.deleteUser(toDeleteUserId);
+    res.send(r).status(200);
+    await useUserDataBase.destroyConnection();
+  }catch(e){
+    res.send({
+      message: e.message
+    }).status(400);
+  };
+};
+export {signup, login, getProfileInfos, getUserInfos, deleteUserById};
