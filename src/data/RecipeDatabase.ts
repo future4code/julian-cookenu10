@@ -22,4 +22,20 @@ export class RecipeDatabase extends BaseDatabase{
             throw new Error(error.sqlMessage);
         }
     }
+
+    public async editRecipe(id: string, title: string, description: string): Promise<any>{
+        try {
+            await this.getConnection().update({title, description}).from(process.env.RECIPES_DB_NAME).where("id", "=", id);
+        } catch (error) {
+            throw new Error(error.sqlMessage);
+        }
+    }
+
+    public async deleteRecipe(id: string): Promise<any>{
+        try {
+            await this.getConnection().delete().from(process.env.RECIPES_DB_NAME).where("id", "=", id);
+        } catch (error) {
+            throw new Error(error.sqlMessage);
+        }
+    }
 }
