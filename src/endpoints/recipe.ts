@@ -1,15 +1,18 @@
 import {Request, Response} from "express"
 import {RecipeDatabase} from "../data/RecipeDatabase"
 import Authenticator from "../services/utils/Authenticator";
+import IdGenerator from "../services/utils/IdGenerator"
 import moment from 'moment';
 
 const useRecipeDB = new RecipeDatabase;
 const authenticator = new Authenticator;
+const idGenerator = new IdGenerator;
 
 export const createRecipe = async(req: Request, res: Response) =>{
     try {
         const tokenData = authenticator.getData(req.headers.authorization);
-        await useRecipeDB.createRecipe(req.body.title, req.body.description, tokenData.id);
+        const recipeId = idGenerator.generate();
+        await useRecipeDB.createRecipe(recipeId, req.body.title, req.body.description, tokenData.id);
         res.sendStatus(200);
     } catch (error) {
         res.status(400).send({message: error.message});

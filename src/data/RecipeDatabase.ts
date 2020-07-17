@@ -1,12 +1,8 @@
 import {BaseDatabase} from "../services/BaseDatabase"
-import IdGenerator from "../services/utils/IdGenerator"
 
 export class RecipeDatabase extends BaseDatabase{
-    public async createRecipe(title: string, description: string, creator_id: string): Promise<void>{
+    public async createRecipe(recipeId: string, title: string, description: string, creator_id: string): Promise<void>{
         try{
-            const idGenerator = new IdGenerator;
-
-            const recipeId = idGenerator.generate();
             await this.getConnection().insert({id: recipeId, title, description, creator_id}).into(process.env.RECIPES_DB_NAME)
         }
         catch(error){
