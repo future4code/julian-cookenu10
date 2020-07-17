@@ -1,7 +1,7 @@
 import {UserDatabase} from '../data/UserDatabase';
 import {Response, Request} from 'express';
 import HashManager from '../services/utils/HashManager';
-import Authenticator from '../services/utils/Authenticator';
+import Authenticator, {ROLE} from '../services/utils/Authenticator';
 
 const useUserDataBase = new UserDatabase();
 const hashGen = new HashManager();
@@ -90,4 +90,23 @@ const getProfileInfos = async (req: Request, res: Response): Promise<any> =>{
     ).status(400);
   };
 };
-export {signup, login, getProfileInfos};
+const getUserInfos = async (req: Request, res: Response): Promise<any> =>{
+  try{
+    const token = req.headers.authorization;
+    const searchedUserId = req.params.id;
+
+    const tokenIsValid = tokenGen.getData(token);
+    const searchedUserInfos = await useUserDataBase.getUserById(searchedUserId);
+
+    if(searchedUserInfos){
+      res.send(searchedUserInfos).status(200);
+    }else{
+      throw {message: 'User not found.'};
+    };
+  }catch(e){
+    res.send({
+      message: e.message
+    }).status(400);
+  };
+};
+export {signup, login, getProfileInfos, getUserInfos};
