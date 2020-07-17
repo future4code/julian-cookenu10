@@ -14,9 +14,11 @@ interface signupInput{
   password: string, 
   role: ROLE
 };
-interface loginInput{
+interface searchedUser{
+  id: string,
+  name: string,
   email: string,
-  password: string
+  role: ROLE
 };
 
 export class UserDatabase extends BaseDatabase{
@@ -36,6 +38,7 @@ export class UserDatabase extends BaseDatabase{
        .into(process.env.USER_DB_NAME);
        const token = tokenGen.generateToken({
          id: newId,
+         name: input.name,
          email: input.email,
          role: input.role
        });
@@ -48,15 +51,34 @@ export class UserDatabase extends BaseDatabase{
      };
   };
   
-  public async getUserByEmail (input: loginInput): Promise <any>{
+  public async getUserByEmail(email: string): Promise<any>{
     try{
-      
       const r = await this.getConnection()
       .select('*')
-      .where('email', '=', input.email)
+      .where('email', '=', email)
       .into(process.env.USER_DB_NAME);
-  
-      return r[0]
+      
+      return r.length === 1 && r[0];
+    }catch(e){
+      throw {message: e.sqlMessage || e.message}
+    };
+  };
+
+  public async getUserById(id: string): Promise<any>{
+    try{
+      const r = await this.getConnection()
+      .select('*')
+      .where('id', '=', id)
+      .into(process.env.USER_DB_NAME);
+
+      const userInfos: searchedUser ={
+        id: r[0].id,
+        name: r[0].name,
+        email: r[0].email,
+        role: r[0].role,
+      };
+      
+      return r.length === 1 && userInfos;
     }catch(e){
       throw {message: e.sqlMessage || e.message}
     };
