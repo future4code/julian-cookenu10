@@ -36,6 +36,7 @@ export class UserDatabase extends BaseDatabase{
        .into(process.env.USER_DB_NAME);
        const token = tokenGen.generateToken({
          id: newId,
+         name: input.name,
          email: input.email,
          role: input.role
        });
@@ -48,15 +49,14 @@ export class UserDatabase extends BaseDatabase{
      };
   };
   
-  public async getUserByEmail (input: loginInput): Promise <any>{
+  public async getUserByEmail (email: string): Promise <any>{
     try{
-      
       const r = await this.getConnection()
       .select('*')
-      .where('email', '=', input.email)
+      .where('email', '=', email)
       .into(process.env.USER_DB_NAME);
-  
-      return r[0]
+      
+      return r.length != 0 && r[0];
     }catch(e){
       throw {message: e.sqlMessage || e.message}
     };
