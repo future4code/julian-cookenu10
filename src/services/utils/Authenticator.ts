@@ -7,24 +7,26 @@ export enum ROLE{
 
 export interface AuthenticationData{
   id: string,
-  name: string,
-  email: string,
-  role: ROLE
+  name?: string,
+  email?: string,
+  role?: ROLE | string,
+  device?: string,
 };
 
 class Authenticator{
-  private static EXPIRES_IN = '5min';
-
-  public generateToken(input: AuthenticationData): string{
+  public generateToken(
+    input: AuthenticationData,
+    expiresIn: string = process.env.ACC_TOKEN_EXPIRES_IN
+    ): string{
+      
     const token = jwt.sign(
       {
         id: input.id, 
-        name: input.name, 
-        email: input.email, 
-        role: input.role
+        role: input.role,
+        device: input.device
       }, 
       process.env.JWT_KEY as string,
-      {expiresIn: Authenticator.EXPIRES_IN}
+      {expiresIn}
     );
     return token;
   };
