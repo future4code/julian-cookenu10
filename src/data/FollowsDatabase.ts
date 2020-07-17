@@ -25,15 +25,15 @@ export class FollowsDatabase extends BaseDatabase{
                     `${process.env.RECIPES_DB_NAME}.description as description`, 
                     `${process.env.RECIPES_DB_NAME}.created_at as createdAt`, 
                     `${process.env.RECIPES_DB_NAME}.creator_id as userId`,
-                    `${process.env.USER_DB_NAME}.name as userName
-                `)
+                    `${process.env.USER_DB_NAME}.name as userName`
+                )
                 .from(process.env.RECIPES_DB_NAME)
                 .join(process.env.FOLLOWS_DB_NAME, `${process.env.RECIPES_DB_NAME}.creator_id`,
-                    `${process.env.FOLLOWS_DB_NAME}.user_follow_id
-                `)
+                    `${process.env.FOLLOWS_DB_NAME}.user_follow_id`
+                )
                 .join(process.env.USER_DB_NAME, `${process.env.RECIPES_DB_NAME}.creator_id`, 
-                    `${process.env.USER_DB_NAME}.id
-                `)
+                    `${process.env.USER_DB_NAME}.id`
+                )
                 .where(process.env.FOLLOWS_DB_NAME+".user_id", "=", userId)
                 .orderBy(process.env.RECIPES_DB_NAME+".created_at", "DESC")
             return feed;
