@@ -9,45 +9,31 @@ const tokenGen = new Authenticator();
 
 //Interfaces
 interface signupInput{
+  id: string,
   name: string, 
   email: string, 
   password: string, 
-  role: ROLE
+  role: ROLE | string
 };
 interface searchedUser{
   id: string,
   name: string,
   email: string,
-  role: ROLE
+  role: ROLE | string
 };
 
 export class UserDatabase extends BaseDatabase{
-  public async createUser (input: signupInput): Promise<any>{
+  public async createUser (input: signupInput): Promise<void>{
      try{
-       const newId = idGen.generate();
-       const hashedPwd = await hashGen.hash(input.password);
-
        await this.getConnection()
        .insert({
-         id: newId,
+         id: input.id,
          name: input.name,
          email: input.email,
-         password: hashedPwd, 
+         password: input.password, 
          role: input.role,
        })
        .into(process.env.USER_DB_NAME);
-
-       const token = tokenGen.generateToken({
-         id: newId,
-         name: input.name,
-         email: input.email,
-         role: input.role
-       });
-
-       return {
-         message: `User ${input.name} successfully created!`,
-         token
-       };
      }catch(e){
        throw {message: e.sqlMessage|| e.message}
      };
