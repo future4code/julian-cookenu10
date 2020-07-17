@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {signup}  from './endpoints/signup'; 
+import { signup, login } from './endpoints/user'; 
 import { createRecipe, getRecipe } from './endpoints/recipe';
 import {followUser} from './endpoints/followUser';
 import { unfollowUser } from './endpoints/unfollowUser';
@@ -8,7 +8,7 @@ import {userFeed} from './endpoints/feed'
 const routes = Router();
 
 routes.post('/signup', signup);
-routes.post('/login',);
+routes.post('/login', login);
 routes.get('/user/profile',);
 routes.get('/user/:id',);
 routes.post('/recipe', createRecipe);
