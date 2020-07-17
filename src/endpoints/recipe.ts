@@ -32,7 +32,7 @@ export const getRecipe = async(req: Request, res: Response) => {
 
 export const editRecipe = async(req: Request, res: Response) => {
     try {
-        if(req.body.title === "" || req.body.description === "" || !req.params.id){
+        if(req.body.title.trim() === "" || req.body.description.trim() === "" || !req.params.id){
             throw new Error("Invalid parameters")
         }
         const user = authenticator.getData(req.headers.authorization)
