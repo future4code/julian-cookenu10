@@ -8,7 +8,6 @@ export class RecipeDatabase extends BaseDatabase{
             const idGenerator = new IdGenerator;
 
             const recipeId = idGenerator.generate();
-            console.log({id: recipeId, title, description, creator_id})
             await this.getConnection().insert({id: recipeId, title, description, creator_id}).into(process.env.RECIPES_DB_NAME)
         }
         catch(error){
