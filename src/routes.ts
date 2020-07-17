@@ -1,5 +1,7 @@
 import {Router} from 'express';
-import { signup, login, getProfileInfos, getUserInfos } from './endpoints/user'; 
+import { 
+  signup, login, getProfileInfos, getUserInfos, deleteUserById 
+} from './endpoints/user'; 
 import { createRecipe, getRecipe, editRecipe, deleteRecipe } from './endpoints/recipe';
 import {followUser} from './endpoints/followUser';
 import { unfollowUser } from './endpoints/unfollowUser';
@@ -18,5 +20,6 @@ routes.post('/user/unfollow', unfollowUser);
 routes.get('/user/feed', userFeed);
 routes.put('/recipe/:id', editRecipe);
 routes.delete('/recipe/:id', deleteRecipe);
+routes.delete('/user/:id', deleteUserById);
 
 export default routes;

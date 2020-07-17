@@ -78,7 +78,8 @@ const getProfileInfos = async (req: Request, res: Response): Promise<any> =>{
     const userInfos = tokenGen.getData(token);
     const r = await useUserDataBase.getUserByEmail(userInfos.email);
     if(r){
-      res.send(userInfos).status(200)
+      res.send(userInfos).status(200);
+      await useUserDataBase.destroyConnection();
     }else{
       throw {message: 'User not found.'}
     };
@@ -100,6 +101,7 @@ const getUserInfos = async (req: Request, res: Response): Promise<any> =>{
 
     if(searchedUserInfos){
       res.send(searchedUserInfos).status(200);
+      await useUserDataBase.destroyConnection();
     }else{
       throw {message: 'User not found.'};
     };
@@ -109,4 +111,22 @@ const getUserInfos = async (req: Request, res: Response): Promise<any> =>{
     }).status(400);
   };
 };
-export {signup, login, getProfileInfos, getUserInfos};
+const deleteUserById = async (req: Request, res: Response): Promise<any> =>{
+  try{
+    const token = req.headers.authorization;
+    const adminInfos = tokenGen.getData(token);
+    const toDeleteUserId = req.params.id;
+    if(adminInfos.role != ROLE.ADMIN){
+      throw {message: 'Not an Admin user. Only Admins are allowed to delete other users.'};
+    };
+
+    const r = await useUserDataBase.deleteUser(toDeleteUserId);
+    res.send(r).status(200);
+    await useUserDataBase.destroyConnection();
+  }catch(e){
+    res.send({
+      message: e.message
+    }).status(400);
+  };
+};
+export {signup, login, getProfileInfos, getUserInfos, deleteUserById};
